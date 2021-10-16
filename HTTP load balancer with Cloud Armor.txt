@@ -1,0 +1,41 @@
+
+	siege-vm
+
+gcloud compute firewall-rules create default-allow-http \
+    --network=default \
+    --action=allow \
+    --direction=ingress \
+    --source-ranges=0.0.0.0/0 \
+    --target-tags=http-server \
+    --rules=tcp:80
+
+gcloud compute firewall-rules create default-allow-health-check \
+    --network=default \
+    --action=allow \
+    --direction=ingress \
+    --source-ranges=130.211.0.0/22,35.191.0.0/16 \
+    --target-tags=http-server \
+    --rules=tcp
+
+gcloud compute instance-templates create  us-east1-template \
+   --region=us-east1 \
+   --network=default \
+   --subnet=default \
+   --machine-type=n1-standard-1 \
+   --tags=http-server \
+   --metadata=startup-script-url="gs://cloud-training/gcpnet/httplb/startup.sh"
+
+
+gcloud compute instance-templates create  europe-west1-template \
+--region=europe-west1\
+   --network=default \
+   --subnet=default\
+   --machine-type=n1-standard-1 \
+   --tags=http-server \
+   --metadata=startup-script-url="gs://cloud-training/gcpnet/httplb/startup.sh"
+
+
+gcloud compute instances create siege-vm \
+  --machine-type n1-standard-1 \
+ --region us-west1 \
+  --zone us-west1-c 

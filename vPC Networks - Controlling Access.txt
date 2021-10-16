@@ -1,0 +1,20 @@
+gcloud compute instances create blue --zone us-central1-a --tags web-server \
+--metadata=startup-script="#! /bin/bash
+  apt update
+  sudo apt-get install nginx-light -y
+  sudo sed -i 's/nginx/the blue server/g' /var/www/html/index.nginx-debian.html"
+
+gcloud compute instances create green --zone us-central1-a \
+--metadata=startup-script="#! /bin/bash
+  apt update
+  sudo apt-get install nginx-light -y
+  sudo sed -i 's/nginx/the green server/g' /var/www/html/index.nginx-debian.html"
+
+gcloud compute firewall-rules create allow-http-web-server \
+    --target-tags web-server\
+    --source-ranges=0.0.0.0/0, --allow tcp:80,icmp
+
+gcloud compute instances create test-vm --machine-type=f1-micro --subnet=default --zone=us-central1-a
+
+
+
